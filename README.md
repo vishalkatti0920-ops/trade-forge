@@ -11,7 +11,7 @@ Open `index.html` in a modern browser. No build step, account, backend, or depen
 - Record long or short trades with symbol, entry, exit, quantity, close date, fees, and notes.
 - Calculate net P&L, win rate, trade count, and average P&L.
 - Search by symbol and filter by side.
-- Delete entries, export a JSON backup, and import a backup.
+- Edit and delete entries, export a JSON backup, and import a backup.
 - Save entries in this browser's local storage.
 
 ## P&L calculation
