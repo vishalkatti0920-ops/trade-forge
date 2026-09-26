@@ -60,6 +60,12 @@
       .format(new Date(year, month - 1, day));
   }
 
+  function localDateString() {
+    const now = new Date();
+    const pad = (value) => String(value).padStart(2, "0");
+    return now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+  }
+
   function node(tag, className, text) {
     const element = document.createElement(tag);
     if (className) element.className = className;
@@ -126,7 +132,7 @@
 
     tradeList.replaceChildren(...filtered.map(makeTradeRow));
     emptyState.classList.toggle("visible", filtered.length === 0);
-    tradeList.parentElement.hidden = filtered.length === 0;
+    tradeList.closest("table").hidden = filtered.length === 0;
     byId("result-count").textContent = "Showing " + filtered.length + (filtered.length === 1 ? " trade" : " trades");
     updateStats();
   }
@@ -175,19 +181,20 @@
   }
 
   function updatePreview() {
+    const preview = byId("pnl-preview").querySelector("strong");
     const entry = Number(byId("entry").value);
     const exit = Number(byId("exit").value);
     const quantity = Number(byId("quantity").value);
     const fees = Number(byId("fees").value || 0);
     const side = byId("side").value;
     if (!(entry > 0) || !(exit > 0) || !(quantity > 0) || fees < 0) {
-      byId("pnl-preview").textContent = "$0.00";
-      byId("pnl-preview").className = "";
+      preview.textContent = "$0.00";
+      preview.className = "";
       return;
     }
     const result = (side === "long" ? exit - entry : entry - exit) * quantity - fees;
-    byId("pnl-preview").textContent = money(result);
-    byId("pnl-preview").className = result > 0 ? "positive" : result < 0 ? "negative" : "";
+    preview.textContent = money(result);
+    preview.className = result > 0 ? "positive" : result < 0 ? "negative" : "";
   }
 
   function showToast(message) {
@@ -238,7 +245,7 @@
     if (saveTrades()) {
       renderTrades();
       form.reset();
-      byId("date").value = new Date().toLocaleDateString("en-CA");
+      byId("date").value = localDateString();
       updatePreview();
       showToast(trade.symbol + " trade saved.");
     }
@@ -250,7 +257,7 @@
   directionFilter.addEventListener("change", renderTrades);
   byId("export-button").addEventListener("click", exportData);
   byId("import-file").addEventListener("change", importData);
-  byId("date").value = new Date().toLocaleDateString("en-CA");
+  byId("date").value = localDateString();
   renderTrades();
   updatePreview();
 })();
