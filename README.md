@@ -1,11 +1,26 @@
 # Trade Forge
 
-A local-first trading journal for recording trades and reviewing performance.
+A local-first trading journal for recording closed trades and reviewing performance.
 
-## Planned starter features
+## Run it
 
-- Record a trade with symbol, direction, entry and exit prices, size, dates, and notes.
-- Review net P&L, win rate, trade count, and recent activity.
-- Keep journal data in the browser with export and import options.
+Open `index.html` in a modern browser. No build step, account, backend, or dependency installation is required. The optional DM Sans and DM Mono fonts load from Google Fonts; the system font stack is used if they are unavailable.
 
-The starter implementation is being prepared for review in a pull request.
+## What it does
+
+- Record long or short trades with symbol, entry, exit, quantity, close date, fees, and notes.
+- Calculate net P&L, win rate, trade count, and average P&L.
+- Search by symbol and filter by side.
+- Delete entries, export a JSON backup, and import a backup.
+- Save entries in this browser's local storage.
+
+## P&L calculation
+
+- Long: `(exit price - entry price) × quantity - fees`
+- Short: `(entry price - exit price) × quantity - fees`
+
+Values are displayed in USD. Win rate is the share of logged trades with positive net P&L.
+
+## Data and limitations
+
+Journal entries stay in the browser profile where they were created. Clearing browser data removes them, so export a backup before changing devices or browser profiles. Import replaces the current journal after confirmation. This starter is a journal only: it does not connect to brokers, fetch market prices, place orders, or provide investment advice.
