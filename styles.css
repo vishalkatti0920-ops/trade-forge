@@ -185,3 +185,11 @@ td { border-top: 1px solid var(--line-soft); padding: 13px 12px; color: #b1bdb5;
   .field-row { gap: 8px; }
   .page-footer { font-size: 8px; gap: 10px; }
 }
+
+.row-actions { display: flex; align-items: center; gap: 4px; }
+.edit-button, .delete-button { border: 0; background: transparent; cursor: pointer; padding: 3px 5px; font-size: 14px; }
+.edit-button { color: #829087; }
+.edit-button:hover { color: var(--green); }
+.delete-button { color: #637169; }
+.delete-button:hover { color: var(--red); }
+.cancel-edit { width: 100%; }
