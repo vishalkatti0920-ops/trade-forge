@@ -24,7 +24,7 @@
   }
 
   function isValidDate(value) {
-    if (typeof value !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
+    if (typeof value !== "string" || !/^\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
     const parsed = new Date(value + "T00:00:00Z");
     return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
   }
@@ -38,7 +38,7 @@
       Number.isFinite(trade.exit) && trade.exit > 0 &&
       Number.isFinite(trade.quantity) && trade.quantity > 0 &&
       Number.isFinite(trade.fees) && trade.fees >= 0 &&
-      typeof trade.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(trade.date) &&
+      isValidDate(trade.date) &&
       typeof trade.notes === "string" && trade.notes.length <= 500;
   }
 
