@@ -11,6 +11,7 @@
   const toast = byId("toast");
   const currency = new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" });
   let trades = readTrades();
+  let editingTradeId = null;
   let toastTimer;
 
   function readTrades() {
@@ -25,7 +26,7 @@
   function isValidTrade(trade) {
     return trade && typeof trade === "object" &&
       typeof trade.id === "string" &&
-      typeof trade.symbol === "string" && trade.symbol.length <= 12 &&
+      typeof trade.symbol === "string" && trade.symbol.trim().length > 0 && trade.symbol.length <= 12 &&
       (trade.side === "long" || trade.side === "short") &&
       Number.isFinite(trade.entry) && trade.entry > 0 &&
       Number.isFinite(trade.exit) && trade.exit > 0 &&
@@ -35,9 +36,10 @@
       typeof trade.notes === "string" && trade.notes.length <= 500;
   }
 
-  function saveTrades() {
+  function saveTrades(nextTrades) {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(trades));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(nextTrades));
+      trades = nextTrades;
       return true;
     } catch {
       showToast("Could not save. Your browser storage may be full.");
@@ -111,7 +113,13 @@
     const sizeCell = node("td", "", new Intl.NumberFormat(undefined, { maximumFractionDigits: 6 }).format(trade.quantity));
     const result = tradePnl(trade);
     const pnlCell = node("td", "pnl-cell " + (result > 0 ? "positive" : result < 0 ? "negative" : ""), money(result));
-    const actionCell = node("td");
+    const actionCell = node("td", "row-actions");
+    const edit = node("button", "edit-button", "✎");
+    edit.type = "button";
+    edit.setAttribute("aria-label", "Edit " + trade.symbol + " trade");
+    edit.title = "Edit trade";
+    edit.addEventListener("click", () => beginEdit(trade.id));
+    actionCell.append(edit);
     const remove = node("button", "delete-button", "×");
     remove.type = "button";
     remove.setAttribute("aria-label", "Delete " + trade.symbol + " trade");
@@ -137,11 +145,44 @@
     updateStats();
   }
 
+  function beginEdit(id) {
+    const trade = trades.find((item) => item.id === id);
+    if (!trade) return;
+    editingTradeId = trade.id;
+    byId("symbol").value = trade.symbol;
+    byId("side").value = trade.side;
+    byId("entry").value = String(trade.entry);
+    byId("exit").value = String(trade.exit);
+    byId("quantity").value = String(trade.quantity);
+    byId("fees").value = String(trade.fees);
+    byId("date").value = trade.date;
+    byId("notes").value = trade.notes;
+    byId("add-trade").querySelector("h2").textContent = "Edit trade";
+    byId("add-trade").querySelector(".eyebrow").textContent = "UPDATE ENTRY";
+    byId("trade-form").querySelector(".submit-button").firstChild.textContent = "Update trade ";
+    byId("cancel-edit").hidden = false;
+    updatePreview();
+    byId("add-trade").scrollIntoView({ behavior: "smooth", block: "start" });
+    byId("symbol").focus({ preventScroll: true });
+  }
+
+  function cancelEdit() {
+    editingTradeId = null;
+    form.reset();
+    byId("date").value = localDateString();
+    byId("add-trade").querySelector("h2").textContent = "Log a trade";
+    byId("add-trade").querySelector(".eyebrow").textContent = "NEW ENTRY";
+    byId("trade-form").querySelector(".submit-button").firstChild.textContent = "Save trade ";
+    byId("cancel-edit").hidden = true;
+    updatePreview();
+  }
+
   function deleteTrade(id) {
     const trade = trades.find((item) => item.id === id);
     if (!trade || !window.confirm("Delete the " + trade.symbol + " trade?")) return;
-    trades = trades.filter((item) => item.id !== id);
-    if (saveTrades()) {
+    const nextTrades = trades.filter((item) => item.id !== id);
+    if (saveTrades(nextTrades)) {
+      if (editingTradeId === id) cancelEdit();
       renderTrades();
       showToast("Trade deleted.");
     }
@@ -225,8 +266,9 @@
         throw new Error("The file does not contain valid Trade Forge journal data.");
       }
       if (!window.confirm("Replace your current journal with " + incoming.length + " imported trades?")) return;
-      trades = incoming.map((trade) => ({ ...trade, id: makeId() }));
-      if (saveTrades()) {
+      const nextTrades = incoming.map((trade) => ({ ...trade, id: makeId() }));
+      if (saveTrades(nextTrades)) {
+        cancelEdit();
         renderTrades();
         showToast("Journal imported.");
       }
@@ -241,13 +283,20 @@
     event.preventDefault();
     const trade = readFormTrade();
     if (!trade) return;
-    trades.push(trade);
-    if (saveTrades()) {
+    let nextTrades;
+    let message;
+    if (editingTradeId) {
+      trade.id = editingTradeId;
+      nextTrades = trades.map((item) => item.id === editingTradeId ? trade : item);
+      message = trade.symbol + " trade updated.";
+    } else {
+      nextTrades = [...trades, trade];
+      message = trade.symbol + " trade saved.";
+    }
+    if (saveTrades(nextTrades)) {
+      cancelEdit();
       renderTrades();
-      form.reset();
-      byId("date").value = localDateString();
-      updatePreview();
-      showToast(trade.symbol + " trade saved.");
+      showToast(message);
     }
   });
 
@@ -257,6 +306,7 @@
   directionFilter.addEventListener("change", renderTrades);
   byId("export-button").addEventListener("click", exportData);
   byId("import-file").addEventListener("change", importData);
+  byId("cancel-edit").addEventListener("click", cancelEdit);
   byId("date").value = localDateString();
   renderTrades();
   updatePreview();
