@@ -17,7 +17,7 @@
   function readTrades() {
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      return Array.isArray(parsed) ? parsed.filter(isValidTrade) : [];
+      return Array.isArray(parsed) ? parsed.filter(isValidTrade).map((trade) => ({ ...trade, strategy: typeof trade.strategy === "string" ? trade.strategy : "" })) : [];
     } catch {
       return [];
     }
@@ -39,7 +39,8 @@
       Number.isFinite(trade.quantity) && trade.quantity > 0 &&
       Number.isFinite(trade.fees) && trade.fees >= 0 &&
       isValidDate(trade.date) &&
-      typeof trade.notes === "string" && trade.notes.length <= 500;
+      typeof trade.notes === "string" && trade.notes.length <= 500 &&
+      (typeof trade.strategy === "undefined" || (typeof trade.strategy === "string" && trade.strategy.length <= 32));
   }
 
   function saveTrades(nextTrades) {
@@ -104,6 +105,7 @@
     const side = node("span", "side-pill " + trade.side, trade.side);
     title.append(side);
     tradeCell.append(title);
+    if (trade.strategy) tradeCell.append(node("span", "trade-secondary trade-strategy", trade.strategy));
     if (trade.notes) {
       const note = node("span", "trade-secondary trade-notes", trade.notes);
       note.title = trade.notes;
@@ -141,7 +143,7 @@
     const query = searchInput.value.trim().toUpperCase();
     const side = directionFilter.value;
     const filtered = [...trades]
-      .filter((trade) => (!query || trade.symbol.includes(query)) && (side === "all" || trade.side === side))
+      .filter((trade) => (!query || trade.symbol.includes(query) || (trade.strategy || "").toUpperCase().includes(query)) && (side === "all" || trade.side === side))
       .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
 
     tradeList.replaceChildren(...filtered.map(makeTradeRow));
@@ -156,6 +158,7 @@
     if (!trade) return;
     editingTradeId = trade.id;
     byId("symbol").value = trade.symbol;
+    byId("strategy").value = trade.strategy || "";
     byId("side").value = trade.side;
     byId("entry").value = String(trade.entry);
     byId("exit").value = String(trade.exit);
@@ -217,7 +220,8 @@
       quantity,
       fees,
       date,
-      notes: byId("notes").value.trim().slice(0, 500)
+      notes: byId("notes").value.trim().slice(0, 500),
+      strategy: byId("strategy").value.trim().slice(0, 32)
     };
   }
 
@@ -272,7 +276,7 @@
         throw new Error("The file does not contain valid Trade Forge journal data.");
       }
       if (!window.confirm("Replace your current journal with " + incoming.length + " imported trades?")) return;
-      const nextTrades = incoming.map((trade) => ({ ...trade, id: makeId() }));
+      const nextTrades = incoming.map((trade) => ({ ...trade, strategy: trade.strategy || "", id: makeId() }));
       if (saveTrades(nextTrades)) {
         cancelEdit();
         renderTrades();
