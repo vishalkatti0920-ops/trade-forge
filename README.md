@@ -1,6 +1,6 @@
 # Trade Forge
 
-A local-first trading journal for recording closed trades and reviewing performance.
+A local-first trading journal with an offline paper simulator for learning how preset entry and exit rules behave on historical prices.
 
 ## Run it
 
@@ -13,6 +13,20 @@ Open `index.html` in a modern browser. No build step, account, backend, or depen
 - Search by symbol or strategy and filter by side.
 - Edit and delete entries, export a JSON backup, and import a backup.
 - Save entries in this browser's local storage.
+
+## Historical paper simulator
+
+The simulator reads daily closing prices from a CSV with `date` and `close` columns. For example:
+
+```csv
+date,close
+2025-01-02,100.25
+2025-01-03,101.10
+```
+
+Set the fast and slow simple moving average periods, the simulated quantity, and starting balance. It opens a simulated long position when the fast average crosses above the slow average and closes it when the fast average crosses below. Any remaining position closes at the last row in the file. The invented demo prices let you try the interface without market data.
+
+This is a historical simulation only. It does not stream live prices, connect to a broker, or place real orders. Fees and slippage are not included, and results do not predict future performance. CSV data is processed in your browser and is not uploaded.
 
 ## P&L calculation
 
@@ -34,4 +48,4 @@ The workflow runs only when started manually; merging the pull request will not 
 
 ## Data and limitations
 
-Journal entries stay in the browser profile where they were created. Clearing browser data removes them, so export a backup before changing devices or browser profiles. Import replaces the current journal after confirmation. This starter is a journal only: it does not connect to brokers, fetch market prices, place orders, or provide investment advice.
+Journal entries stay in the browser profile where they were created. Clearing browser data removes them, so export a backup before changing devices or browser profiles. Import replaces the current journal after confirmation. The paper simulator is not an automated live-trading service and does not provide investment advice.
