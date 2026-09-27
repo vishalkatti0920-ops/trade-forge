@@ -71,6 +71,23 @@ bool ReadCrossSignals(bool &bullishCross, bool &bearishCross)
    return true;
 }
 
+bool HasForeignPositionForSymbol()
+{
+   for(int i = PositionsTotal() - 1; i >= 0; --i)
+   {
+      ulong candidate = PositionGetTicket(i);
+      if(candidate == 0)
+         continue;
+
+      if(PositionGetString(POSITION_SYMBOL) == _Symbol &&
+         (ulong)PositionGetInteger(POSITION_MAGIC) != InpMagicNumber)
+      {
+         return true;
+      }
+   }
+   return false;
+}
+
 bool FindOwnPosition(ulong &ticket, ENUM_POSITION_TYPE &positionType)
 {
    ticket = 0;
@@ -233,6 +250,14 @@ void OnTick()
    bool bearishCross;
    if(!ReadCrossSignals(bullishCross, bearishCross))
       return;
+
+   // On netting accounts, separate strategies can share one symbol position.
+   // Refuse to act if another strategy/manual trade already has a position here.
+   if(HasForeignPositionForSymbol())
+   {
+      Print("Another position exists for this symbol; this EA will not manage or add to it.");
+      return;
+   }
 
    ulong ticket;
    ENUM_POSITION_TYPE positionType;
