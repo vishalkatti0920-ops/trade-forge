@@ -11,7 +11,7 @@ This folder contains an optional MetaTrader 5 Expert Advisor for **XM MT5 demo a
 - Closes its own position after a downward cross.
 - Sets a broker-side stop loss and take profit on each entry.
 - Skips new entries when spread exceeds the configured maximum.
-- Uses a unique magic number so it only manages its own positions.
+- Uses a unique magic number so it only manages its own positions.\n- Refuses to act when another position already exists for the same chart symbol.
 
 ## Safety defaults and limits
 
