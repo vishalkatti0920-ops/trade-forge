@@ -84,10 +84,15 @@
     return generated;
   }
 
-  function averageAt(index, period) {
+  function movingAverages(period) {
+    const averages = new Array(prices.length).fill(null);
     let sum = 0;
-    for (let offset = index - period + 1; offset <= index; offset += 1) sum += prices[offset].close;
-    return sum / period;
+    for (let index = 0; index < prices.length; index += 1) {
+      sum += prices[index].close;
+      if (index >= period) sum -= prices[index - period].close;
+      if (index >= period - 1) averages[index] = sum / period;
+    }
+    return averages;
   }
 
   function simulate() {
@@ -110,24 +115,38 @@
     }
 
     const completed = [];
+    const fastAverages = movingAverages(fastPeriod);
+    const slowAverages = movingAverages(slowPeriod);
     let position = null;
+    let balance = startingBalance;
+    let skippedForCash = false;
     for (let index = slowPeriod; index < prices.length; index += 1) {
-      const previousFast = averageAt(index - 1, fastPeriod);
-      const previousSlow = averageAt(index - 1, slowPeriod);
-      const fast = averageAt(index, fastPeriod);
-      const slow = averageAt(index, slowPeriod);
+      const previousFast = fastAverages[index - 1];
+      const previousSlow = slowAverages[index - 1];
+      const fast = fastAverages[index];
+      const slow = slowAverages[index];
       if (!position && previousFast <= previousSlow && fast > slow) {
-        position = { date: prices[index].date, price: prices[index].close };
+        const cost = prices[index].close * quantity;
+        if (balance >= cost) {
+          balance -= cost;
+          position = { date: prices[index].date, price: prices[index].close };
+        } else {
+          skippedForCash = true;
+        }
       } else if (position && previousFast >= previousSlow && fast < slow) {
         completed.push(closePosition(position, prices[index], quantity, "Average crossover"));
+        balance += prices[index].close * quantity;
         position = null;
       }
     }
-    if (position) completed.push(closePosition(position, prices[prices.length - 1], quantity, "End of data"));
+    if (position) {
+      const lastPrice = prices[prices.length - 1];
+      completed.push(closePosition(position, lastPrice, quantity, "End of data"));
+      balance += lastPrice.close * quantity;
+    }
 
-    const total = completed.reduce((sum, trade) => sum + trade.pnl, 0);
+    const total = balance - startingBalance;
     const wins = completed.filter((trade) => trade.pnl > 0).length;
-    const balance = startingBalance + total;
     runCount.textContent = String(completed.length);
     netPnl.textContent = formatter.format(total);
     netPnl.className = total > 0 ? "positive" : total < 0 ? "negative" : "";
@@ -135,7 +154,8 @@
     winRate.textContent = completed.length ? ((wins / completed.length) * 100).toFixed(1) + "%" : "—";
     resultRows.replaceChildren(...completed.map(makeResultRow));
     results.hidden = false;
-    setStatus("Simulation complete: " + prices.length + " daily prices checked. No real orders were placed.");
+    setStatus("Simulation complete: " + prices.length + " daily prices checked. No real orders were placed." +
+      (skippedForCash ? " Some entries were skipped because the balance was too low." : ""));
   }
 
   function closePosition(position, exit, quantity, reason) {
