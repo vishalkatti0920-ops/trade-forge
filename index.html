@@ -81,7 +81,7 @@
         </div>
         <div class="paper-body">
           <p class="paper-disclaimer">This first version uses historical CSV data or invented demo prices. It does not stream live prices, connect to a broker, or place real orders. Results do not predict future returns.</p>
-          <div class="paper-rule"><strong>Built-in rule:</strong> buy one long position when the fast simple moving average crosses above the slow average; close it when the fast average crosses below. Any open position closes at the last price in the file. Fees and slippage are not included.</div>
+          <div class="paper-rule"><strong>Built-in rule:</strong> buy one long position when the fast simple moving average crosses above the slow average; close it when the fast average crosses below. Only one long position is held at a time, using the entered quantity. An entry is skipped when simulated cash cannot cover it. Any open position closes at the last price in the file. Fees and slippage are not included.</div>
           <div class="paper-controls">
             <label class="field">Daily price CSV <input id="paper-csv" type="file" accept=".csv,text/csv"></label>
             <label class="field">Fast average (days) <input id="paper-fast" type="number" min="2" max="499" value="20"></label>
