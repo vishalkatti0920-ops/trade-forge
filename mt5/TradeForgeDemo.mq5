@@ -144,10 +144,12 @@ bool OpenDemoBuy()
    }
 
    long minStopPoints = SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL);
-   if(InpStopLossPoints < minStopPoints || InpTakeProfitPoints < minStopPoints)
+   long requiredStopPoints = minStopPoints + (long)MathCeil(spreadPoints) + 1;
+   if(InpStopLossPoints < requiredStopPoints ||
+      InpTakeProfitPoints < requiredStopPoints)
    {
-      PrintFormat("Configured stop distances must be at least the broker minimum of %d points.",
-                  (int)minStopPoints);
+      PrintFormat("Configured stop distances must be at least %d points for this spread and broker.",
+                  (int)requiredStopPoints);
       return false;
    }
 
