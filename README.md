@@ -8,9 +8,9 @@ Open `index.html` in a modern browser. No build step, account, backend, or depen
 
 ## What it does
 
-- Record long or short trades with symbol, entry, exit, quantity, close date, fees, and notes.
+- Record long or short trades with symbol, optional strategy, entry, exit, quantity, close date, fees, and notes.
 - Calculate net P&L, win rate, trade count, and average P&L.
-- Search by symbol and filter by side.
+- Search by symbol or strategy and filter by side.
 - Edit and delete entries, export a JSON backup, and import a backup.
 - Save entries in this browser's local storage.
 
