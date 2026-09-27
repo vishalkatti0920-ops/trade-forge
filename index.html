@@ -77,7 +77,7 @@
               <h2>Recent trades</h2>
             </div>
             <div class="table-tools">
-              <label class="search-box"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Search symbol" aria-label="Search trades by symbol"></label>
+              <label class="search-box"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Search symbol or strategy" aria-label="Search trades by symbol or strategy"></label>
               <select id="direction-filter" aria-label="Filter by direction">
                 <option value="all">All sides</option>
                 <option value="long">Long</option>
@@ -110,6 +110,7 @@
               <label class="field">Symbol<input id="symbol" name="symbol" placeholder="e.g. AAPL" maxlength="12" required autocomplete="off"></label>
               <label class="field">Side<select id="side" name="side"><option value="long">Long</option><option value="short">Short</option></select></label>
             </div>
+            <label class="field">Strategy <span class="optional">(optional)</span><input id="strategy" name="strategy" placeholder="e.g. Breakout" maxlength="32" autocomplete="off"></label>
             <div class="field-row">
               <label class="field">Entry price<div class="input-prefix"><span>$</span><input id="entry" name="entry" type="number" min="0.000001" step="any" placeholder="0.00" required></div></label>
               <label class="field">Exit price<div class="input-prefix"><span>$</span><input id="exit" name="exit" type="number" min="0.000001" step="any" placeholder="0.00" required></div></label>
