@@ -25,7 +25,7 @@ date,close
 2025-01-03,101.10
 ```
 
-Set the fast and slow simple moving average periods, the simulated quantity, and starting balance. It opens one simulated long position when the fast average crosses above the slow average and closes it when the fast average crosses below. It only opens a position if the simulated cash balance covers its cost. Any remaining position closes at the last row in the file. The invented demo prices let you try the interface without market data.
+Set the fast and slow simple moving average periods, the simulated quantity, and starting balance. It opens one simulated long position at the next daily close after the fast average crosses above the slow average and closes it at the next daily close after the fast average crosses below. This next-close fill is an approximation because the CSV contains daily closing prices only. It only opens a position if the simulated cash balance covers its cost. Any remaining position closes at the last row in the file. The invented demo prices let you try the interface without market data.
 
 This is a historical simulation only. It does not stream live prices, connect to a broker, or place real orders. Fees and slippage are not included, and results do not predict future performance. CSV data is processed in your browser and is not uploaded.
 
