@@ -228,7 +228,7 @@
   }
 
   function updatePreview() {
-    const preview = byId("pnl-preview").querySelector("strong");
+    const preview = byId("pnl-preview");
     const entry = Number(byId("entry").value);
     const exit = Number(byId("exit").value);
     const quantity = Number(byId("quantity").value);
