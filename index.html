@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
+  <script src="paper-simulator.js" defer></script>
 </head>
 <body>
   <div class="shell">
@@ -67,6 +68,48 @@
           <strong id="stat-average" class="stat-value">$0.00</strong>
           <span class="stat-note">Net P&amp;L per trade</span>
         </article>
+      </section>
+
+      <section class="panel paper-panel" id="paper-simulator" aria-labelledby="paper-title">
+        <div class="panel-heading paper-heading">
+          <div>
+            <div class="eyebrow">PAPER TRADING</div>
+            <h2 id="paper-title">Historical strategy simulator</h2>
+            <p class="muted">See how automatic entries and exits would have behaved on past prices.</p>
+          </div>
+          <span class="form-badge">SIMULATED ONLY</span>
+        </div>
+        <div class="paper-body">
+          <p class="paper-disclaimer">This first version uses historical CSV data or invented demo prices. It does not stream live prices, connect to a broker, or place real orders. Results do not predict future returns.</p>
+          <div class="paper-rule"><strong>Built-in rule:</strong> buy one long position at the next daily close after the fast simple moving average crosses above the slow average; close it at the next daily close after the fast average crosses below. Only one long position is held at a time, using the entered quantity. An entry is skipped when simulated cash cannot cover it. Any open position closes at the last price in the file. Fees and slippage are not included.</div>
+          <div class="paper-controls">
+            <label class="field">Daily price CSV <input id="paper-csv" type="file" accept=".csv,text/csv"></label>
+            <label class="field">Fast average (days) <input id="paper-fast" type="number" min="2" max="499" value="20"></label>
+            <label class="field">Slow average (days) <input id="paper-slow" type="number" min="3" max="500" value="50"></label>
+            <label class="field">Quantity per position <input id="paper-quantity" type="number" min="0.000001" step="any" value="1"></label>
+            <label class="field">Starting balance ($) <input id="paper-balance" type="number" min="0.01" step="any" value="10000"></label>
+          </div>
+          <p class="paper-help">CSV needs one row per day with columns named <code>date</code> and <code>close</code>. Example: <code>date,close</code>. Prices stay in this browser.</p>
+          <div class="paper-actions">
+            <button class="button button-quiet" id="load-demo-prices" type="button">Load invented demo prices</button>
+            <button class="button button-primary" id="run-paper-simulation" type="button">Run simulation</button>
+          </div>
+          <p class="paper-status" id="paper-status" role="status" aria-live="polite">Choose a CSV or load the invented demo prices to begin.</p>
+          <div id="paper-results" hidden>
+            <div class="paper-stats" aria-label="Simulation results">
+              <article><span>Closed positions</span><strong id="paper-run-count">0</strong></article>
+              <article><span>Simulated net P&amp;L</span><strong id="paper-net-pnl">$0.00</strong></article>
+              <article><span>Ending balance</span><strong id="paper-final-balance">$0.00</strong></article>
+              <article><span>Winning positions</span><strong id="paper-win-rate">—</strong></article>
+            </div>
+            <div class="trade-table-wrap">
+              <table class="paper-table">
+                <thead><tr><th>ENTRY DATE</th><th>ENTRY PRICE</th><th>EXIT DATE</th><th>EXIT PRICE</th><th>SIMULATED P&amp;L</th><th>EXIT REASON</th></tr></thead>
+                <tbody id="paper-trade-list"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="content-grid">
