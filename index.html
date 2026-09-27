@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1110">
+  <title>Trade Forge — Trading Journal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" aria-label="Main navigation">
+      <a class="brand" href="#" aria-label="Trade Forge home">
+        <span class="brand-mark">TF</span>
+        <span class="brand-name">trade<span>forge</span></span>
+      </a>
+      <div class="rail-label">WORKSPACE</div>
+      <a class="nav-item active" href="#overview"><span class="nav-icon">◫</span> Overview</a>
+      <a class="nav-item" href="#journal"><span class="nav-icon">≡</span> Journal <span class="nav-count" id="nav-count">0</span></a>
+      <div class="rail-bottom">
+        <div class="local-badge"><span></span> Saved on this device</div>
+        <p>Your journal stays in this browser. Export a backup to keep it safe.</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="crumb"><span>Workspace</span><b>/</b><strong>Trading journal</strong></div>
+        <div class="top-actions">
+          <button class="button button-quiet" id="export-button" type="button">Export data</button>
+          <label class="button button-quiet import-button" for="import-file">Import data</label>
+          <input id="import-file" type="file" accept="application/json,.json" hidden>
+        </div>
+      </header>
+
+      <section class="page-heading" id="overview">
+        <div>
+          <div class="eyebrow"><span class="live-dot"></span> YOUR PERFORMANCE DESK</div>
+          <h1>Trading journal</h1>
+          <p class="muted">Build a clearer picture of every decision you make.</p>
+        </div>
+        <a class="button button-primary" href="#add-trade"><span class="plus">＋</span> Log a trade</a>
+      </section>
+
+      <section class="stats-grid" aria-label="Performance summary">
+        <article class="stat-card">
+          <div class="stat-top"><span>Net P&amp;L</span><span class="stat-symbol">↗</span></div>
+          <strong id="stat-pnl" class="stat-value">$0.00</strong>
+          <span class="stat-note">After recorded fees</span>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Win rate</span><span class="stat-symbol">◎</span></div>
+          <strong id="stat-winrate" class="stat-value">—</strong>
+          <span class="stat-note" id="winrate-note">No closed trades yet</span>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Trades logged</span><span class="stat-symbol">▤</span></div>
+          <strong id="stat-count" class="stat-value">0</strong>
+          <span class="stat-note">Closed positions</span>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Average trade</span><span class="stat-symbol">⌁</span></div>
+          <strong id="stat-average" class="stat-value">$0.00</strong>
+          <span class="stat-note">Net P&amp;L per trade</span>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <section class="panel journal-panel" id="journal">
+          <div class="panel-heading">
+            <div>
+              <div class="eyebrow">ACTIVITY</div>
+              <h2>Recent trades</h2>
+            </div>
+            <div class="table-tools">
+              <label class="search-box"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Search symbol" aria-label="Search trades by symbol"></label>
+              <select id="direction-filter" aria-label="Filter by direction">
+                <option value="all">All sides</option>
+                <option value="long">Long</option>
+                <option value="short">Short</option>
+              </select>
+            </div>
+          </div>
+          <div class="trade-table-wrap">
+            <table>
+              <thead><tr><th>TRADE</th><th>DATE</th><th>ENTRY → EXIT</th><th>SIZE</th><th>NET P&amp;L</th><th><span class="sr-only">Actions</span></th></tr></thead>
+              <tbody id="trade-list"></tbody>
+            </table>
+            <div class="empty-state" id="empty-state">
+              <div class="empty-icon">↗</div>
+              <strong>No trades yet</strong>
+              <p>Log your first trade to start learning from your decisions.</p>
+              <a class="button button-primary button-small" href="#add-trade">Add your first trade</a>
+            </div>
+          </div>
+          <div class="table-footer"><span id="result-count">Showing 0 trades</span><span>Sorted by date, newest first</span></div>
+        </section>
+
+        <aside class="panel form-panel" id="add-trade">
+          <div class="panel-heading form-heading">
+            <div><div class="eyebrow">NEW ENTRY</div><h2>Log a trade</h2></div>
+            <span class="form-badge">CLOSED</span>
+          </div>
+          <form id="trade-form">
+            <div class="field-row">
+              <label class="field">Symbol<input id="symbol" name="symbol" placeholder="e.g. AAPL" maxlength="12" required autocomplete="off"></label>
+              <label class="field">Side<select id="side" name="side"><option value="long">Long</option><option value="short">Short</option></select></label>
+            </div>
+            <div class="field-row">
+              <label class="field">Entry price<div class="input-prefix"><span>$</span><input id="entry" name="entry" type="number" min="0.000001" step="any" placeholder="0.00" required></div></label>
+              <label class="field">Exit price<div class="input-prefix"><span>$</span><input id="exit" name="exit" type="number" min="0.000001" step="any" placeholder="0.00" required></div></label>
+            </div>
+            <div class="field-row">
+              <label class="field">Quantity<input id="quantity" name="quantity" type="number" min="0.000001" step="any" placeholder="10" required></label>
+              <label class="field">Fees <span class="optional">(optional)</span><div class="input-prefix"><span>$</span><input id="fees" name="fees" type="number" min="0" step="any" placeholder="0.00" value="0"></div></label>
+            </div>
+            <label class="field">Close date<input id="date" name="date" type="date" required></label>
+            <label class="field">Notes <span class="optional">(optional)</span><textarea id="notes" name="notes" rows="3" maxlength="500" placeholder="What did you notice?"></textarea></label>
+            <div class="pnl-preview"><span>Estimated net P&amp;L</span><strong id="pnl-preview">$0.00</strong></div>
+            <button class="button button-primary submit-button" type="submit">Save trade <span>↗</span></button>
+            <button class="button button-quiet cancel-edit" id="cancel-edit" type="button" hidden>Cancel edit</button>
+            <p class="form-footnote">Your entry is stored locally in this browser.</p>
+          </form>
+        </aside>
+      </section>
+      <footer class="page-footer"><span>TRADE FORGE <i>•</i> PRIVATE BY DEFAULT</span><span>Journal data stays on your device</span></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
