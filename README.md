@@ -13,6 +13,7 @@ Open `index.html` in a modern browser. No build step, account, backend, or depen
 - Search by symbol or strategy and filter by side.
 - Edit and delete entries, export a JSON backup, and import a backup.
 - Save entries in this browser's local storage.
+- Run an offline moving-average paper simulation on historical prices.
 
 ## Historical paper simulator
 
@@ -24,7 +25,7 @@ date,close
 2025-01-03,101.10
 ```
 
-Set the fast and slow simple moving average periods, the simulated quantity, and starting balance. It opens a simulated long position when the fast average crosses above the slow average and closes it when the fast average crosses below. Any remaining position closes at the last row in the file. The invented demo prices let you try the interface without market data.
+Set the fast and slow simple moving average periods, the simulated quantity, and starting balance. It opens one simulated long position when the fast average crosses above the slow average and closes it when the fast average crosses below. It only opens a position if the simulated cash balance covers its cost. Any remaining position closes at the last row in the file. The invented demo prices let you try the interface without market data.
 
 This is a historical simulation only. It does not stream live prices, connect to a broker, or place real orders. Fees and slippage are not included, and results do not predict future performance. CSV data is processed in your browser and is not uploaded.
 
@@ -37,14 +38,7 @@ Values are displayed in USD. Win rate is the share of logged trades with positiv
 
 ## Publish a live preview
 
-After this pull request is merged:
-
-1. In the repository, open **Settings → Pages**.
-2. Set the publishing source to **GitHub Actions**.
-3. Open **Actions → Publish Trade Forge to GitHub Pages → Run workflow**.
-4. Wait for the run to finish and open the URL shown in the deployment job.
-
-The workflow runs only when started manually; merging the pull request will not publish the site automatically. GitHub Pages makes the website publicly accessible. Journal entries are stored in each visitor's browser and are not sent to a server.
+The live preview is published from the repository's `main` branch using GitHub Pages. Merging a change to `main` triggers deployment. GitHub Pages makes the website publicly accessible. Journal entries and simulator CSV data are handled locally in each visitor's browser and are not sent to a server.
 
 ## Data and limitations
 
