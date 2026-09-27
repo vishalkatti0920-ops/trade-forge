@@ -83,6 +83,7 @@ th:last-child, td:last-child { padding-right: 17px; }
 td { border-top: 1px solid var(--line-soft); padding: 13px 12px; color: #b1bdb5; font-size: 11px; }
 .trade-primary { color: #e5ede7; font-weight: 600; font-size: 12px; }
 .trade-secondary { display: block; color: var(--subtle); font: 10px var(--mono); margin-top: 2px; }
+.trade-strategy { width: fit-content; border: 1px solid #304139; border-radius: 4px; padding: 1px 5px; color: #a9bcaa; margin-top: 5px; }
 .side-pill { display: inline-block; border-radius: 4px; padding: 2px 5px; margin-left: 5px; font: 9px var(--mono); text-transform: uppercase; }
 .side-pill.long { background: rgba(183,243,107,.1); color: var(--green); }
 .side-pill.short { background: rgba(255,122,114,.1); color: #ff978f; }
