@@ -120,22 +120,23 @@
     let position = null;
     let balance = startingBalance;
     let skippedForCash = false;
-    for (let index = slowPeriod; index < prices.length; index += 1) {
+    for (let index = slowPeriod; index < prices.length - 1; index += 1) {
       const previousFast = fastAverages[index - 1];
       const previousSlow = slowAverages[index - 1];
       const fast = fastAverages[index];
       const slow = slowAverages[index];
+      const fill = prices[index + 1];
       if (!position && previousFast <= previousSlow && fast > slow) {
-        const cost = prices[index].close * quantity;
+        const cost = fill.close * quantity;
         if (balance >= cost) {
           balance -= cost;
-          position = { date: prices[index].date, price: prices[index].close };
+          position = { date: fill.date, price: fill.close };
         } else {
           skippedForCash = true;
         }
       } else if (position && previousFast >= previousSlow && fast < slow) {
-        completed.push(closePosition(position, prices[index], quantity, "Average crossover"));
-        balance += prices[index].close * quantity;
+        completed.push(closePosition(position, fill, quantity, "Average crossover"));
+        balance += fill.close * quantity;
         position = null;
       }
     }
